@@ -17,7 +17,16 @@
 # │   │   └── App.js
 # │   └── index.html          # Entry HTML
 # └── README.md
-# package.json
+# cross‑tech
+- README.md — คำอธิบายการติดตั้งและรัน
+- src/ — โค้ดต้นฉบับ
+- tests/ — ทดสอบหน่วย
+- .gitignore
+- LICENSE
+- Dockerfile (ถ้าต้องการ container)
+- .github/workflows/ci.yml (CI เบื้องต้น)
+# Node.js + Express (minimal)
+package.json
 ```
 {
   "name": "my-express-app",
