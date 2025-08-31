@@ -1,0 +1,285 @@
+# Pichai
+import React, { useState, useEffect } from 'react';
+import { ChevronRight, Heart, Shield, Zap, Users } from 'lucide-react';
+
+const AttachmentStyleQuiz = () => {
+  const [currentScreen, setCurrentScreen] = useState('welcome');
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [result, setResult] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const questions = [
+    {
+      text: "When someone I care about pulls away, I tend to...",
+      options: [
+        { text: "Give them space while staying available", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 1 } },
+        { text: "Worry they're losing interest in me", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 2 } },
+        { text: "Focus on other things in my life", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+        { text: "Become a houseplant and photosynthesize my feelings", score: { secure: 0, anxious: 1, avoidant: 2, fearful: 3 } }
+      ]
+    },
+    {
+      text: "In relationships, I find it easiest to...",
+      options: [
+        { text: "Share my feelings openly and honestly", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+        { text: "Express my needs, even if it feels vulnerable", score: { secure: 2, anxious: 3, avoidant: 0, fearful: 1 } },
+        { text: "Keep some parts of myself private", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 2 } },
+        { text: "Communicate exclusively through interpretive dance", score: { secure: 1, anxious: 2, avoidant: 1, fearful: 2 } }
+      ]
+    },
+    {
+      text: "When it comes to depending on others, I...",
+      options: [
+        { text: "Feel comfortable asking for help when needed", score: { secure: 3, anxious: 1, avoidant: 0, fearful: 0 } },
+        { text: "Often seek reassurance from those close to me", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+        { text: "Prefer to handle things on my own", score: { secure: 0, anxious: 0, avoidant: 3, fearful: 1 } },
+        { text: "Train a team of very helpful squirrels", score: { secure: 1, anxious: 1, avoidant: 2, fearful: 2 } }
+      ]
+    },
+    {
+      text: "My ideal relationship dynamic involves...",
+      options: [
+        { text: "Balance between togetherness and independence", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+        { text: "Lots of quality time and emotional closeness", score: { secure: 1, anxious: 3, avoidant: 0, fearful: 1 } },
+        { text: "Maintaining my autonomy and personal space", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+        { text: "Building a blanket fort and never leaving", score: { secure: 2, anxious: 2, avoidant: 0, fearful: 2 } }
+      ]
+    },
+    {
+      text: "When conflicts arise in relationships, I typically...",
+      options: [
+        { text: "Address them calmly and work toward resolution", score: { secure: 3, anxious: 0, avoidant: 0, fearful: 0 } },
+        { text: "Feel anxious until we've talked it through", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+        { text: "Need time alone before discussing", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+        { text: "Feel overwhelmed and unsure how to respond", score: { secure: 0, anxious: 1, avoidant: 0, fearful: 3 } }
+      ]
+    },
+    {
+      text: "Trust in relationships comes...",
+      options: [
+        { text: "Naturally as I get to know someone", score: { secure: 3, anxious: 0, avoidant: 1, fearful: 0 } },
+        { text: "With constant reassurance and validation", score: { secure: 0, anxious: 3, avoidant: 0, fearful: 1 } },
+        { text: "Slowly, and I maintain healthy skepticism", score: { secure: 1, anxious: 0, avoidant: 3, fearful: 1 } },
+        { text: "In waves - sometimes easily, sometimes not at all", score: { secure: 0, anxious: 1, avoidant: 0, fearful: 3 } }
+      ]
+    }
+  ];
+
+  const attachmentStyles = {
+    secure: {
+      title: "Secure Attachment",
+      icon: <Heart className="w-12 h-12" />,
+      color: "from-rose-400 to-pink-600",
+      description: "You have a healthy, balanced approach to relationships. You're comfortable with intimacy and independence, can effectively communicate your needs, and trust comes naturally to you.",
+      traits: ["Emotionally available", "Good at setting boundaries", "Comfortable with intimacy", "Effective communicator"],
+      growth: "Your secure foundation allows you to form deep, meaningful connections. Continue nurturing your relationships with open communication and empathy."
+    },
+    anxious: {
+      title: "Anxious Attachment",
+      icon: <Zap className="w-12 h-12" />,
+      color: "from-amber-400 to-orange-600",
+      description: "You deeply value close relationships and may sometimes worry about your partner's feelings toward you. You have a big heart and capacity for deep emotional connection.",
+      traits: ["Highly empathetic", "Values emotional closeness", "Intuitive about others' feelings", "Passionate and caring"],
+      growth: "Practice self-soothing techniques and build your sense of self-worth independent of relationships. Your sensitivity is a strength when balanced with self-assurance."
+    },
+    avoidant: {
+      title: "Avoidant Attachment",
+      icon: <Shield className="w-12 h-12" />,
+      color: "from-emerald-400 to-teal-600",
+      description: "You value your independence and self-reliance. While you can form relationships, you prefer maintaining some emotional distance and personal space.",
+      traits: ["Self-reliant", "Independent thinker", "Strong boundaries", "Values personal growth"],
+      growth: "Challenge yourself to share vulnerable moments with trusted people. Your independence is valuable, and combining it with emotional openness can deepen your connections."
+    },
+    fearful: {
+      title: "Fearful-Avoidant Attachment",
+      icon: <Users className="w-12 h-12" />,
+      color: "from-purple-400 to-indigo-600",
+      description: "You experience a complex mix of wanting close relationships while also fearing vulnerability. This creates a unique depth and understanding of human complexity.",
+      traits: ["Deeply introspective", "Highly perceptive", "Complex emotional range", "Resilient"],
+      growth: "Practice self-compassion and gradual vulnerability with safe people. Your ability to see multiple perspectives is a gift that can lead to profound connections."
+    }
+  };
+
+  const calculateResult = () => {
+    const scores = { secure: 0, anxious: 0, avoidant: 0, fearful: 0 };
+    
+    answers.forEach(answer => {
+      Object.keys(scores).forEach(style => {
+        scores[style] += answer.score[style];
+      });
+    });
+
+    const maxScore = Math.max(...Object.values(scores));
+    const result = Object.keys(scores).find(key => scores[key] === maxScore);
+    
+    return result;
+  };
+
+  const handleAnswer = (option) => {
+    setIsAnimating(true);
+    const newAnswers = [...answers, option];
+    setAnswers(newAnswers);
+
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        const style = calculateResult();
+        setResult(style);
+        setCurrentScreen('result');
+      }
+      setIsAnimating(false);
+    }, 300);
+  };
+
+  const restart = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentScreen('welcome');
+      setCurrentQuestion(0);
+      setAnswers([]);
+      setResult(null);
+      setIsAnimating(false);
+    }, 300);
+  };
+
+  const startQuiz = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentScreen('quiz');
+      setIsAnimating(false);
+    }, 300);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+      <div className="max-w-2xl w-full">
+        <div className={`transition-all duration-500 transform ${isAnimating ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}>
+          {currentScreen === 'welcome' && (
+            <div className="text-center space-y-8">
+              <div className="relative">
+                <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-pink-500 to-violet-600 opacity-30 rounded-full"></div>
+                <h1 className="relative text-6xl font-bold text-white mb-4 tracking-tight">
+                  Discover Your
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-violet-400">
+                    Attachment Style
+                  </span>
+                </h1>
+              </div>
+              
+              <p className="text-xl text-gray-200 max-w-md mx-auto leading-relaxed">
+                Understanding how you connect with others can transform your relationships and deepen self-awareness
+              </p>
+              
+              <button
+                onClick={startQuiz}
+                className="group relative inline-flex items-center gap-3 bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl shadow-lg"
+              >
+                <span>Begin Your Journey</span>
+                <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 opacity-0 group-hover:opacity-20 transition-opacity blur-xl"></div>
+              </button>
+            </div>
+          )}
+
+          {currentScreen === 'quiz' && (
+            <div className="space-y-8">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex gap-2">
+                  {questions.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        index < currentQuestion
+                          ? 'w-12 bg-gradient-to-r from-pink-400 to-violet-400'
+                          : index === currentQuestion
+                          ? 'w-16 bg-white/50'
+                          : 'w-8 bg-white/20'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-white/60 text-sm font-medium">
+                  {currentQuestion + 1} of {questions.length}
+                </span>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl">
+                <h2 className="text-2xl font-bold text-white mb-8 leading-relaxed">
+                  {questions[currentQuestion].text}
+                </h2>
+                
+                <div className="space-y-3">
+                  {questions[currentQuestion].options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswer(option)}
+                      className="w-full text-left p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 text-white transition-all duration-300 hover:bg-white/10 hover:border-white/30 hover:scale-[1.02] hover:shadow-lg"
+                    >
+                      <span className="text-lg leading-relaxed">{option.text}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentScreen === 'result' && result && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <div className={`inline-flex p-6 rounded-full bg-gradient-to-br ${attachmentStyles[result].color} text-white mb-6 shadow-2xl`}>
+                  {attachmentStyles[result].icon}
+                </div>
+                
+                <h2 className="text-5xl font-bold text-white mb-4">
+                  {attachmentStyles[result].title}
+                </h2>
+                
+                <p className="text-xl text-gray-200 max-w-lg mx-auto leading-relaxed mb-8">
+                  {attachmentStyles[result].description}
+                </p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl space-y-6">
+                <div>
+                  <h3 className="text-2xl font-semibold text-white mb-4">Your Strengths</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {attachmentStyles[result].traits.map((trait, index) => (
+                      <div
+                        key={index}
+                        className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-white/90 text-center"
+                      >
+                        {trait}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-semibold text-white mb-4">Growth Path</h3>
+                  <p className="text-gray-200 leading-relaxed">
+                    {attachmentStyles[result].growth}
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <button
+                  onClick={restart}
+                  className="group relative inline-flex items-center gap-3 bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl shadow-lg"
+                >
+                  <span>Take Quiz Again</span>
+                  <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 opacity-0 group-hover:opacity-20 transition-opacity blur-xl"></div>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AttachmentStyleQuiz;
