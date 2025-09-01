@@ -1,4 +1,3 @@
-# Pichai
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Heart, Shield, Zap, Users } from 'lucide-react';
 
