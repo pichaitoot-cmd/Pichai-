@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>MyApp Full System Facebook+Shop+CMS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="เว็บระบบครบ: โซเชียล, ร้านค้า, CMS, หลังบ้าน, แจ้งเตือน, Chat, Gamification">
+  <meta property="og:title" content="MyApp Facebook+Shop+CMS Clone">
+  <meta property="og:description" content="ระบบครบ: โซเชียล, ร้านค้า, CMS, หลังบ้าน, แจ้งเตือน, Chat, Gamification">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=300">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
+    :root {
+      --bg: #f0f2f5;
+      --primary: #1877f2;
+      --menu-bg: #fff;
+      --text: #222;
+      --font: 'Roboto', 'Segoe UI', sans-serif;
+      --dark-bg: #18191a;
+      --dark-text: #e4e6eb;
+      --warm-bg: #fff8ea;
+      --warm-text: #6b3e26;
+      --accent: #fbad50;
+    }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+    .theme-dark {
+      --bg: var(--dark-bg);
+      --text: var(--dark-text);
+      --menu-bg: #242526;
+      --font: 'Roboto', 'Segoe UI', sans-serif;
+    }
+    .theme-warm {
+      --bg: var(--warm-bg);
+      --text: var(--warm-text);
+      --menu-bg: #ffe3c6;
+      --font: 'Prompt', 'Segoe UI', sans-serif;
+    }
+    .theme-custom {
+      --bg: #e7f9fc;
+      --text: #2e4455;
+      --menu-bg: #d9f6ff;
+      --accent: #09a5c5;
+      --font: 'Mali', 'Roboto', sans-serif;
+    }
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      background: var(--menu-bg);
+      box-shadow: 0 1px 6px #0001;
+      display: flex;
+      align-items: center;
+      z-index: 10;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .logo {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 1.2em;
+      letter-spacing: 1px;
+    }
+    nav a {
+      margin: 0 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    nav a.hide { display: none;}
+    .notification-icon { cursor: pointer; margin-left: 16px; font-size: 1.2em; }
+    .top-right {
+      display: flex; align-items: center;
+    }
+    .theme-switcher select, .theme-switcher input, .lang-switcher select {
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+    aside {
+      position: fixed;
+      top: 56px; left: 0; bottom: 0;
+      width: 210px;
+      background: var(--menu-bg);
+      box-shadow: 1px 0 8px #0001;
+      padding: 16px 0;
+      transition: width 0.2s;
+      z-index: 9;
+    }
+    aside.collapsed { width: 52px; }
+    aside button {
+      background: none; border: none; cursor: pointer; margin-left: 12px;
+      font-size: 1.3em;
+    }
+    aside ul { list-style: none; padding: 0 0 0 8px; margin: 0; }
+    aside li { margin: 18px 0; }
+    aside a { color: var(--text); text-decoration: none; font-weight: 500; }
+    aside.collapsed a { display: none; }
+    aside.collapsed ul { padding: 0; }
+    .main {
+      margin-left: 210px;
+      margin-top: 56px;
+      padding: 24px;
+      min-height: calc(100vh - 56px);
+      transition: margin-left 0.2s;
+    }
+    aside.collapsed ~ .main { margin-left: 52px; }
+    .ad-banner {
+      margin: 0 auto 24px auto;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px #0002;
+      overflow-x: auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 0;
+    }
+    .ad-banner img, .ad-banner video {
+      max-height: 100px;
+      border-radius: 8px;
+      margin: 0 8px;
+    }
+    .notification-panel {
+      position: fixed;
+      top: 56px; right: 0; width: 330px;
+      background: var(--menu-bg);
+      box-shadow: -2px 0 12px #0003;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 12px;
+      display: none;
+      z-index: 20;
+    }
+    .notification-panel.show { display: block; }
+    .notification {
+      background: #ffe;
+      color: #222;
+      border-left: 4px solid var(--primary);
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.97em;
+    }
+    .feed {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .feed-item {
+      background: #fff;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px #0001;
+      padding: 16px;
+      position: relative;
+    }
+    .feed-item .actions { margin-top: 8px; font-size: 0.98em; }
+    .feed-item .share-btn { position: absolute; top:8px; right:8px; background:var(--accent); border:none; color:#fff; border-radius:4px; padding:2px 8px; cursor:pointer;}
+    .shop-section {
+      max-width: 900px;
+      margin: 0 auto 32px auto;
+      background: #fff;
+      padding: 18px 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+      gap: 18px;
+    }
+    .shop-product {
+      background: #fcfcfc;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px #0001;
+      padding: 10px;
+      text-align: center;
+    }
+    .shop-product img { max-width: 90%; height: 70px; object-fit: cover; border-radius: 6px; }
+    .shop-product .price { color: var(--primary); font-weight: bold; }
+    .shop-product .discount { color: var(--accent); font-size:0.98em; }
+    .shop-cart {
+      margin-top: 8px;
+      font-size: 0.98em;
+      background: #ffe;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    .shop-filters {
+      margin-bottom:12px; display:flex; gap:16px; align-items:center;
+    }
+    .shop-filters select, .shop-filters input { border-radius:4px; padding:2px 8px;}
+    .shop-order-status { margin-top:12px; background:#e8f7e1; padding:8px; border-radius:6px;}
+    .coupon-btn { background:var(--accent); color:#fff; border:none; border-radius:6px; padding:2px 12px; cursor:pointer; margin-left:6px;}
+    .cms-editor {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px #0001;
+      padding: 18px;
+      margin: 32px auto;
+      max-width: 700px;
+    }
+    .cms-editor textarea, .cms-editor select {
+      width: 100%; min-height: 80px; margin-bottom: 8px;
+      border-radius: 6px; border: 1px solid #ccc; resize: vertical;
+      font-size: 1em; padding: 8px;
+    }
+    .cms-editor button { background: var(--primary); color: #fff; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer;}
+    .cms-history { font-size: 0.95em; margin-top: 8px; }
+    .cms-workflow { margin-bottom:12px; }
+    .cms-published { color:green;}
+    .chat-section {
+      max-width: 500px; margin: 0 auto 32px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px #0001;
+      padding: 16px;
+    }
+    .chat-messages { min-height: 80px; max-height: 210px; overflow-y: auto; margin-bottom: 8px;}
+    .chat-message { margin-bottom: 6px; }
+    .chat-message.user { color: var(--primary); }
+    .chat-message.bot { color: var(--accent);}
+    .chat-room-select { margin-bottom:8px;}
+    .chat-user-list { font-size:0.95em; margin-bottom:8px; }
+    .gamification {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px #0001;
+      padding: 12px;
+      margin: 0 auto 32px auto;
+      max-width: 700px;
+      display: flex; gap: 24px; align-items: center;
+    }
+    .gamification .points { font-size: 1.25em; }
+    .gamification .badges img { height: 32px; margin-right: 8px;}
+    .leaderboard { margin-left:18px; font-size:0.98em;}
+    .leaderboard table { border-collapse:collapse; width:180px;}
+    .leaderboard th, .leaderboard td { padding:2px 8px;}
+    .leaderboard tr:nth-child(2) td { background: #ffe;}
+    .dashboard {
+      max-width: 900px; margin: 0 auto 32px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #0002;
+      padding: 18px 24px;
+    }
+    .dashboard h2 { margin-top: 0;}
+    .dashboard-stats { display: flex; gap: 48px; margin-top: 12px;}
+    .dashboard-stat { background: #fafafa; border-radius: 8px; padding: 12px 24px; flex: 1; text-align: center;}
+    .dashboard-graph { margin-top: 18px; }
+    .admin-panel { margin-top:24px;}
+    .admin-panel h3 { margin-bottom:6px;}
+    .admin-table { width:100%; font-size:0.97em; border-collapse:collapse;}
+    .admin-table th, .admin-table td { border:1px solid #eee; padding:4px 10px;}
+    .admin-table th { background:#f8f8f8;}
+    .admin-btn { background:var(--accent); color:#fff; border:none; border-radius:4px; padding:2px 8px; cursor:pointer; }
+    .moderate-btn { background:#d33; color:#fff; border:none; border-radius:4px; padding:2px 8px; cursor:pointer; }
+    @media (max-width: 900px) {
+      .main, .dashboard, .shop-section, .cms-editor, .feed, .gamification { padding: 10px; }
+      aside { width: 44px; }
+      aside.collapsed { width: 0; }
+      .main { margin-left: 44px; }
+      aside.collapsed ~ .main { margin-left: 0; }
+    }
+    @media (max-width: 600px) {
+      header { flex-direction: column; height: auto; padding: 10px; }
+      .main { margin-left: 0; margin-top: 56px; padding: 8px;}
+      aside, aside.collapsed { display: none;}
+      .ad-banner { max-width:98vw;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">MyApp</div>
+    <nav>
+      <a href="#" onclick="showSection('feed')" id="nav-feed">หน้าแรก</a>
+      <a href="#" onclick="showSection('shop')" id="nav-shop">ร้านค้า</a>
+      <a href="#" onclick="showSection('cms')" id="nav-cms">CMS</a>
+      <a href="#" onclick="showSection('chat')" id="nav-chat">แชท</a>
+      <a href="#" onclick="showSection('dashboard')" id="nav-dashboard">หลังบ้าน</a>
+      <a href="#" onclick="showSection('profile')" id="nav-profile">โปรไฟล์</a>
+    </nav>
+    <div class="top-right">
+      <div class="notification-icon" onclick="toggleNotificationPanel()">🔔</div>
+      <div class="theme-switcher">
+        <select onchange="switchTheme(this.value)">
+          <option value="">Light</option>
+          <option value="dark">Dark</option>
+          <option value="warm">Warm</option>
+          <option value="custom">Custom</option>
+        </select>
+        <input type="text" placeholder="Font eg. Prompt" id="fontInput" style="width:70px;" onchange="switchFont(this.value)">
+        <input type="color" id="bgColorInput" title="BG" onchange="switchBgColor(this.value)">
+      </div>
+      <div class="lang-switcher">
+        <select onchange="switchLang(this.value)">
+          <option value="th">TH</option>
+          <option value="en">EN</option>
+        </select>
+      </div>
+      <div style="margin-left:12px;">
+        <button onclick="showSection('login')" id="nav-login">เข้าสู่ระบบ</button>
+        <button onclick="logoutUser()" id="nav-logout" style="display:none">ออกจากระบบ</button>
+      </div>
+    </div>
+  </header>
+  <aside id="sidebar">
+    <button onclick="toggleSidebar()" title="พับเมนู">◀</button>
+    <ul>
+      <li><a href="#" onclick="showSection('feed')" id="side-feed">หน้าแรก</a></li>
+      <li><a href="#" onclick="showSection('shop')" id="side-shop">ร้านค้า</a></li>
+      <li><a href="#" onclick="showSection('cms')" id="side-cms">CMS</a></li>
+      <li><a href="#" onclick="showSection('chat')" id="side-chat">แชท</a></li>
+      <li><a href="#" onclick="showSection('dashboard')" id="side-dashboard">หลังบ้าน</a></li>
+      <li><a href="#" onclick="showSection('profile')" id="side-profile">โปรไฟล์</a></li>
+      <li><a href="#" onclick="showSection('settings')" id="side-settings">การตั้งค่า</a></li>
+    </ul>
+  </aside>
+  <div class="notification-panel" id="notificationPanel"></div>
+  <div class="main" id="main">
+    <!-- AD Banner -->
+    <div class="ad-banner" id="adBanner"></div>
+    <!-- Feed -->
+    <div class="feed" id="feedSection"></div>
+    <!-- Shop -->
+    <div class="shop-section" id="shopSection" style="display:none"></div>
+    <!-- CMS Editor -->
+    <div class="cms-editor" id="cmsSection" style="display:none"></div>
+    <!-- Chat -->
+    <div class="chat-section" id="chatSection" style="display:none"></div>
+    <!-- Gamification -->
+    <div class="gamification" id="gamificationSection"></div>
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboardSection" style="display:none"></div>
+    <!-- Login -->
+    <div class="feed" id="loginSection" style="display:none">
+      <h2 id="loginTitle">เข้าสู่ระบบ / สมัครสมาชิก</h2>
+      <form onsubmit="loginUser(event)">
+        <input type="text" placeholder="ชื่อผู้ใช้" id="loginUser" required>
+        <input type="password" placeholder="รหัสผ่าน" id="loginPass" required>
+        <button type="submit">เข้าสู่ระบบ</button>
+      </form>
+      <button onclick="socialLogin()">เข้าสู่ระบบด้วย Facebook (mock)</button>
+      <div id="loginMsg"></div>
+      <hr>
+      <h3>สมัครสมาชิก</h3>
+      <form onsubmit="registerUser(event)">
+        <input type="text" placeholder="ชื่อผู้ใช้ใหม่" id="regUser" required>
+        <input type="password" placeholder="รหัสผ่าน" id="regPass" required>
+        <select id="regRole">
+          <option value="user">ผู้ใช้ทั่วไป</option>
+          <option value="seller">ร้านค้า</option>
+        </select>
+        <button type="submit">สมัครสมาชิก</button>
+      </form>
+      <div id="regMsg"></div>
+    </div>
+    <!-- Profile -->
+    <div class="feed" id="profileSection" style="display:none">
+      <h2>โปรไฟล์ผู้ใช้</h2>
+      <div id="profileInfo"></div>
+      <button onclick="changePass()">เปลี่ยนรหัสผ่าน (mock)</button>
+      <div id="changePassMsg"></div>
+    </div>
+    <!-- Settings -->
+    <div class="feed" id="settingsSection" style="display:none">
+      <h2>การตั้งค่า</h2>
+      <p>ตั้งค่าบัญชีผู้ใช้, แจ้งเตือน, Theme ฯลฯ</p>
+    </div>
+  </div>
+  <script>
+    // --- Multi-language (basic mock) ---
+    let lang = "th";
+    const dict = {
+      th: {
+        feed: "หน้าแรก", shop: "ร้านค้า", cms: "CMS", chat: "แชท", dashboard: "หลังบ้าน", profile:"โปรไฟล์", settings:"การตั้งค่า", login:"เข้าสู่ระบบ", logout:"ออกจากระบบ",
+        welcome:"ยินดีต้อนรับสู่ระบบ MyApp!",
+        coupon:"คุณได้รับคูปองส่วนลดร้านค้า 10%",
+        newArticle:"มีบทความใหม่ใน CMS",
+        orderStatus:"สถานะออเดอร์ #1234: กำลังจัดส่ง",
+        newComment:"มีผู้คอมเมนต์ใหม่ในโพสต์ของคุณ",
+        lang:"ภาษา", theme:"ธีม", points:"แต้มสะสม", badges:"ป้ายรางวัล", leaderboard:"อันดับแต้ม"
+      },
+      en: {
+        feed: "Home", shop: "Shop", cms: "CMS", chat: "Chat", dashboard: "Backoffice", profile:"Profile", settings:"Settings", login:"Login", logout:"Logout",
+        welcome:"Welcome to MyApp!",
+        coupon:"You got a 10% shop discount coupon!",
+        newArticle:"New article in CMS",
+        orderStatus:"Order #1234 status: Shipping",
+        newComment:"New comment on your post",
+        lang:"Language", theme:"Theme", points:"Points", badges:"Badges", leaderboard:"Leaderboard"
+      }
+    };
+    function switchLang(l) {
+      lang = l;
+      document.querySelectorAll("nav a").forEach(el=>{
+        let key = el.id.replace("nav-","");
+        if(dict[lang][key]) el.innerText = dict[lang][key];
+      });
+      document.querySelectorAll("aside a").forEach(el=>{
+        let key = el.id.replace("side-","");
+        if(dict[lang][key]) el.innerText = dict[lang][key];
+      });
+      document.getElementById("nav-login").innerText = dict[lang].login;
+      document.getElementById("nav-logout").innerText = dict[lang].logout;
+      renderFeed(); renderShop(); renderCMS(); renderChat(); renderGamification(); renderDashboard();
+    }
+
+    // --- Theme Engine ---
+    function switchTheme(t) {
+      document.body.classList.remove('theme-dark','theme-warm','theme-custom');
+      if (t) document.body.classList.add('theme-'+t);
+    }
+    function switchFont(f) {
+      if(f) document.body.style.fontFamily = `'${f}', var(--font)`;
+      else document.body.style.fontFamily = "var(--font)";
+    }
+    function switchBgColor(c) {
+      document.body.style.background = c;
+    }
+    // Sidebar Toggle
+    function toggleSidebar() {
+      let aside = document.getElementById('sidebar');
+      aside.classList.toggle('collapsed');
+    }
+    // --- Notification ---
+    let notifications = [
+      dict[lang].welcome,
+      dict[lang].coupon,
+      dict[lang].newArticle,
+      dict[lang].orderStatus,
+      dict[lang].newComment
+    ];
+    function toggleNotificationPanel() {
+      let panel = document.getElementById('notificationPanel');
+      panel.classList.toggle('show');
+      if (panel.classList.contains('show')) renderNotifications();
+    }
+    function renderNotifications() {
+      let panel = document.getElementById('notificationPanel');
+      panel.innerHTML = notifications.slice(-10).map(n=>`<div class="notification">${n}</div>`).join('');
+    }
+
+    // --- User/Auth ---
+    let users = [{name:"Admin",pass:"admin",role:"admin",points:999,avatar:"👑"},{name:"Alice",pass:"alice",role:"user",points:120,avatar:"🦋"}];
+    let currentUser = null;
+    // Permission based navigation
+    function updateNavByRole() {
+      let role = currentUser ? currentUser.role : "";
+      ["nav-dashboard","side-dashboard"].forEach(id=>document.getElementById(id).style.display=role==="admin"||role==="seller"?"inline":"none");
+      ["nav-profile","side-profile"].forEach(id=>document.getElementById(id).style.display=currentUser?"inline":"none");
+      ["nav-login"].forEach(id=>document.getElementById(id).style.display=currentUser?"none":"inline");
+      ["nav-logout"].forEach(id=>document.getElementById(id).style.display=currentUser?"inline":"none");
+    }
+    function loginUser(e) {
+      e.preventDefault();
+      let u = document.getElementById('loginUser').value;
+      let p = document.getElementById('loginPass').value;
+      let found = users.find(x=>x.name===u && x.pass===p);
+      if(found) {
+        currentUser = found;
+        document.getElementById('loginMsg').innerText = dict[lang].welcome+" "+u;
+        notifications.push("🙋‍♂️ "+dict[lang].welcome+" "+u);
+        updateNavByRole();
+        showSection('feed'); renderProfile();
+      } else {
+        document.getElementById('loginMsg').innerText = "ชื่อผู้ใช้หรือรหัสผ่านผิด";
+      }
+    }
+    function registerUser(e) {
+      e.preventDefault();
+      let u = document.getElementById('regUser').value;
+      let p = document.getElementById('regPass').value;
+      let r = document.getElementById('regRole').value;
+      if(users.find(x=>x.name===u)) {
+        document.getElementById('regMsg').innerText = "ชื่อผู้ใช้ถูกใช้แล้ว";
+        return;
+      }
+      users.push({name:u,pass:p,role:r,points:0,avatar:"😀"});
+      document.getElementById('regMsg').innerText = "สมัครสำเร็จ! กรุณาเข้าสู่ระบบ";
+    }
+    function socialLogin() {
+      currentUser = {name:"FBUser",role:"user",points:60,avatar:"🐦"};
+      updateNavByRole();
+      showSection('feed'); renderProfile();
+      notifications.push("เข้าสู่ระบบด้วย Facebook (mock)");
+    }
+    function logoutUser() {
+      currentUser = null;
+      updateNavByRole();
+      showSection('feed');
+    }
+    function renderProfile() {
+      let el = document.getElementById('profileInfo');
+      if(!currentUser) { el.innerHTML = "ยังไม่ได้เข้าสู่ระบบ"; return;}
+      el.innerHTML = `<div>ชื่อผู้ใช้: <b>${currentUser.name}</b> <span style="font-size:1.5em">${currentUser.avatar}</span></div>
+      <div>สิทธิ์: ${currentUser.role}</div>
+      <div>แต้มสะสม: ${currentUser.points}</div>
+      <div>รหัสผ่าน: *****</div>
+      <div>2FA: <b>เปิดใช้งาน (mock)</b></div>`;
+    }
+    function changePass() {
+      document.getElementById('changePassMsg').innerText = "รหัสผ่านถูกเปลี่ยน (mock)";
+    }
+
+    // --- Section Show/Hide ---
+    function showSection(sec) {
+      let ids = ['feedSection','shopSection','cmsSection','chatSection','dashboardSection','loginSection','settingsSection','profileSection'];
+      ids.forEach(id=>document.getElementById(id).style.display='none');
+      let showId = {
+        feed: 'feedSection',
+        shop: 'shopSection',
+        cms: 'cmsSection',
+        chat: 'chatSection',
+        dashboard: 'dashboardSection',
+        login: 'loginSection',
+        settings: 'settingsSection',
+        profile: 'profileSection'
+      }[sec];
+      if (showId) document.getElementById(showId).style.display='block';
+    }
+
+    // --- AD Banner ---
+    let adData = [
+      {img:"https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=200",url:"#",desc:"โปรโมชันมือถือ"},
+      {video:"https://www.w3schools.com/html/mov_bbb.mp4",url:"#",desc:"โฆษณา Video"},
+      {img:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200",url:"#",desc:"รองเท้า"},
+      {img:"https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=200",url:"#",desc:"Notebook"},
+    ];
+    function renderAdBanner() {
+      let el = document.getElementById('adBanner');
+      el.innerHTML = adData.map(a=>
+        a.img?`<a href="${a.url}" title="${a.desc}"><img src="${a.img}" alt="ad"/></a>`:
+        `<a href="${a.url}" title="${a.desc}"><video src="${a.video}" autoplay loop muted width="120"></video></a>`
+      ).join('');
+    }
+
+    // --- FEED ---
+    let feedData = [
+      {user:"Alice", content:"สวัสดีจ้า 🌸", img:"", likes:5, comments:2},
+      {user:"Bob", content:"โปรโมชั่นเด็ดจากร้านค้า!", img:"https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=300", likes:11, comments:1},
+      {user:"Admin", content:"ระบบ CMS เปิดให้ใช้งานแล้ว", img:"", likes:3, comments:0}
+    ];
+    function renderFeed() {
+      let el = document.getElementById('feedSection');
+      el.innerHTML = `<h2>${dict[lang].feed}</h2>` + feedData.map((item,i)=>`
+        <div class="feed-item">
+          <b>${item.user}</b>: ${item.content}
+          ${item.img?`<div><img src="${item.img}" alt="img" style="max-width:100%;height:120px;object-fit:cover;border-radius:8px"></div>`:""}
+          <div class="actions">👍 ${item.likes} 💬 ${item.comments}
+            <button class="share-btn" onclick="shareFeed(${i})">แชร์</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function shareFeed(i) {
+      const url = location.href + "#feed";
+      const text = feedData[i].content;
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`,'_blank');
+      notifications.push("แชร์ไป Facebook สำเร็จ (mock)");
+    }
+
+    // --- SHOP ---
+    let shopProducts = [
+      {name:"iPhone 15", img:"https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=300", price:27900, cate:"mobile", rating:5, discount:10},
+      {name:"Sneakers", img:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300", price:3500, cate:"shoes", rating:4, discount:0},
+      {name:"Notebook Pro", img:"https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=300", price:29900, cate:"computer", rating:5, discount:5},
+      {name:"T-shirt", img:"https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=300", price:299, cate:"fashion", rating:3, discount:0},
+    ];
+    let cart = [];
+    let orderStatus = "";
+    let shopFilter = {cate:"",minPrice:0,maxPrice:99999,rating:0};
+    function renderShop() {
+      let el = document.getElementById('shopSection');
+      let cates = [...new Set(shopProducts.map(p=>p.cate))];
+      let products = shopProducts.filter(p=>
+        (!shopFilter.cate||p.cate===shopFilter.cate) &&
+        p.price>=shopFilter.minPrice &&
+        p.price<=shopFilter.maxPrice &&
+        p.rating>=shopFilter.rating
+      );
+      el.innerHTML = `<h2>${dict[lang].shop}</h2>
+      <div class="shop-filters">
+        <label>หมวดหมู่: <select onchange="setShopFilter('cate',this.value)">
+          <option value="">ทั้งหมด</option>
+          ${cates.map(c=>`<option value="${c}">${c}</option>`).join('')}
+        </select></label>
+        <label>ราคา <input type="number" min="0" max="99999" value="${shopFilter.minPrice}" onchange="setShopFilter('minPrice',this.value)"> - 
+        <input type="number" min="0" max="99999" value="${shopFilter.maxPrice}" onchange="setShopFilter('maxPrice',this.value)"></label>
+        <label>เรตติ้ง <select onchange="setShopFilter('rating',this.value)">
+          <option value="0">ทั้งหมด</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+          <option value="5">5</option>
+        </select></label>
+        <button class="coupon-btn" onclick="useCoupon()">ใช้คูปองส่วนลด</button>
+      </div>
+      <div class="shop-grid">
+        ${products.map((p,i)=>`
+        <div class="shop-product">
+          <img src="${p.img}" alt="${p.name}"/>
+          <div><b>${p.name}</b></div>
+          <div class="price">฿${p.price}</div>
+          ${p.discount>0?`<div class="discount">ส่วนลด ${p.discount}%</div>`:""}
+          <div>เรตติ้ง: ${"⭐".repeat(p.rating)}</div>
+          <button onclick="addToCart(${i})">ใส่ตะกร้า</button>
+        </div>
+        `).join('')}
+      </div>
+      <div class="shop-cart">
+        <b>ตะกร้า:</b> ${cart.map(c=>c.name).join(', ')||'ว่าง'}
+        ${cart.length>0?'<button onclick="checkout()">ชำระเงิน</button>':''}
+      </div>
+      ${orderStatus?`<div class="shop-order-status">${orderStatus}</div>`:""}
+      `;
+    }
+    function setShopFilter(k,v) {
+      shopFilter[k]=k==="minPrice"||k==="maxPrice"?parseInt(v):v;
+      renderShop();
+    }
+    function addToCart(i) {
+      cart.push(shopProducts[i]);
+      renderShop();
+      notifications.push(`🛒 สินค้า ${shopProducts[i].name} ถูกเพิ่มในตะกร้า`);
+    }
+    function checkout() {
+      orderStatus = "กำลังดำเนินการ/รอจัดส่ง (mock)";
+      cart = [];
+      renderShop();
+      notifications.push("🛍️ ออเดอร์ใหม่ถูกสร้าง");
+      setTimeout(()=>{orderStatus="จัดส่งแล้ว Tracking: MOCK123"; renderShop();},2000);
+    }
+    function useCoupon() {
+      notifications.push("ใช้คูปองสำเร็จ ลดราคา 10% (mock)");
+    }
+
+    // --- CMS ---
+    let cmsHistory = [];
+    let cmsStatus = "Draft";
+    function renderCMS() {
+      let el = document.getElementById('cmsSection');
+      el.innerHTML = `<h2>${dict[lang].cms} Editor</h2>
+      <div class="cms-workflow">
+        สถานะ: <select onchange="setCMSStatus(this.value)">
+          <option value="Draft" ${cmsStatus==="Draft"?"selected":""}>Draft</option>
+          <option value="Review" ${cmsStatus==="Review"?"selected":""}>Review</option>
+          <option value="Published" ${cmsStatus==="Published"?"selected":""}>Published</option>
+        </select>
+      </div>
+      <textarea id="cmsInput" placeholder="เขียนเนื้อหา/บทความ..."></textarea>
+      <button onclick="saveCMS()">บันทึก</button>
+      <div class="cms-history">
+        <b>ประวัติ:</b>
+        <ul>${cmsHistory.map((h,i)=>`<li>${h} <button onclick="restoreCMS(${i})">ย้อนกลับ</button></li>`).join('')}</ul>
+      </div>
+      ${cmsStatus==="Published"?'<div class="cms-published">เผยแพร่แล้ว</div>':''}
+      `;
+    }
+    function setCMSStatus(s) { cmsStatus=s; renderCMS();}
+    function saveCMS() {
+      let val = document.getElementById('cmsInput').value;
+      if(val) {
+        cmsHistory.push(val);
+        renderCMS();
+        notifications.push("📝 เนื้อหา CMS ใหม่ถูกบันทึก");
+      }
+    }
+    function restoreCMS(i) {
+      document.getElementById('cmsInput').value = cmsHistory[i];
+    }
+
+    // --- CHAT ---
+    let chatRooms = ["Support","Bot","Room1"];
+    let chatRoom = "Support";
+    let chatUsers = ["Admin","Alice","Me"];
+    let chatOnline = ["Admin","Me"];
+    let chatMessages = [{room:"Support",user:"Admin",msg:"สวัสดี มีอะไรให้ช่วยไหม?"}];
+    function renderChat() {
+      let el = document.getElementById('chatSection');
+      let msgs = chatMessages.filter(m=>m.room===chatRoom);
+      el.innerHTML = `<h2>${dict[lang].chat} Support</h2>
+        <div class="chat-room-select">ห้อง: <select onchange="switchChatRoom(this.value)">
+          ${chatRooms.map(r=>`<option value="${r}" ${r===chatRoom?"selected":""}>${r}</option>`).join('')}
+        </select></div>
+        <div class="chat-user-list">Online: ${chatOnline.join(', ')}</div>
+        <div class="chat-messages" id="chatMsgs">${msgs.map(m=>`
+          <div class="chat-message ${m.user==='Me'?'user':(m.user==="Bot"?"bot":"")}"><b>${m.user}:</b> ${m.msg}</div>
+        `).join('')}</div>
+        <input class="chat-input" id="chatInput" placeholder="พิมพ์ข้อความ..." onkeydown="if(event.key==='Enter'){sendChat()}">
+        <button onclick="sendChat()">ส่ง</button>
+      `;
+    }
+    function switchChatRoom(r) { chatRoom=r; renderChat();}
+    function sendChat() {
+      let val = document.getElementById('chatInput').value;
+      if(val) {
+        chatMessages.push({room:chatRoom,user:"Me",msg:val});
+        document.getElementById('chatInput').value='';
+        renderChat();
+        if(chatRoom==="Bot")
+          setTimeout(()=>{chatMessages.push({room:chatRoom,user:"Bot",msg:"บอทขอบคุณ! ระบบจะตอบกลับเร็วๆนี้"}); renderChat();},800);
+        if(chatRoom==="Support")
+          setTimeout(()=>{chatMessages.push({room:chatRoom,user:"Admin",msg:"เจ้าหน้าที่กำลังตอบกลับ"}); renderChat();},900);
+      }
+    }
+
+    // --- Gamification ---
+    let points = 120;
+    let badges = ["🏆","🎖️"];
+    let leaderboard = [{name:"Admin",points:999},{name:"Alice",points:120},{name:"Me",points:60}];
+    function renderGamification() {
+      let el = document.getElementById('gamificationSection');
+      el.innerHTML = `<div class="points"><b>${dict[lang].points}:</b> ${currentUser?currentUser.points:points}</div>
+        <div class="badges"><b>${dict[lang].badges}:</b> ${badges.map(b=>`<img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f3c6.svg" alt="badge">`).join('')}</div>
+        <div><button onclick="earnPoint()">รับแต้มเพิ่ม</button> <button onclick="exchangePoint()">แลกแต้ม</button></div>
+        <div class="leaderboard"><b>${dict[lang].leaderboard}:</b>
+          <table><tr><th>ชื่อ</th><th>แต้ม</th></tr>
+            ${leaderboard.map((u,i)=>`<tr><td>${u.name}</td><td>${u.points}</td></tr>`).join('')}
+          </table>
+        </div>
+      `;
+    }
+    function earnPoint() {
+      if(currentUser) currentUser.points += 10;
+      else points += 10;
+      renderGamification();
+      notifications.push("🎯 คุณได้รับแต้มสะสม +10");
+    }
+    function exchangePoint() {
+      if(currentUser && currentUser.points>=50) {
+        currentUser.points -= 50;
+        badges.push("🏅");
+        renderGamification();
+        notifications.push("🏅 แลกแต้มสำเร็จ! ได้ badge ใหม่");
+      }
+    }
+
+    // --- Dashboard/Backoffice ---
+    let moderateComments = [{id:1,content:"Nice!",user:"Alice",status:"pending"},{id:2,content:"badword!",user:"Bob",status:"pending"}];
+    function renderDashboard() {
+      let el=document.getElementById('dashboardSection');
+      el.innerHTML = `<h2>${dict[lang].dashboard} สถิติ</h2>
+        <div class="dashboard-stats">
+          <div class="dashboard-stat"><b>ยอดวิว</b><br>1,250</div>
+          <div class="dashboard-stat"><b>ยอดขาย</b><br>3,900</div>
+          <div class="dashboard-stat"><b>Engagement</b><br>870</div>
+        </div>
+        <div class="dashboard-graph"><b>กราฟตัวอย่าง</b><br>
+          <svg width="320" height="80"><polyline points="0,60 40,55 80,30 120,40 160,20 200,45 240,60 280,40 320,55" style="fill:none;stroke:var(--primary);stroke-width:3"/></svg>
+        </div>
+        <div class="admin-panel">
+          <h3>จัดการผู้ใช้</h3>
+          <table class="admin-table">
+            <tr><th>ชื่อ</th><th>สิทธิ์</th><th>แต้ม</th><th>จัดการ</th></tr>
+            ${users.map(u=>`<tr><td>${u.name}</td><td>${u.role}</td><td>${u.points}</td>
+            <td><button class="admin-btn" onclick="banUser('${u.name}')">Ban</button></td></tr>`).join('')}
+          </table>
+        </div>
+        <div class="admin-panel">
+          <h3>Moderate คอมเมนต์ (AI Assist)</h3>
+          <table class="admin-table">
+            <tr><th>ผู้ใช้</th><th>เนื้อหา</th><th>สถานะ</th><th>จัดการ</th></tr>
+            ${moderateComments.map(m=>`<tr><td>${m.user}</td><td>${m.content}</td><td>${m.status}</td>
+            <td><button class="moderate-btn" onclick="approveComment(${m.id})">Approve</button></td></tr>`).join('')}
+          </table>
+        </div>
+      `;
+    }
+    function banUser(name) {
+      users = users.filter(u=>u.name!==name);
+      renderDashboard();
+      notifications.push("ผู้ใช้ "+name+" ถูกแบน (mock)");
+    }
+    function approveComment(id) {
+      let mc = moderateComments.find(m=>m.id===id);
+      if(mc) mc.status = "approved";
+      renderDashboard();
+      notifications.push("คอมเมนต์ "+id+" ผ่านการตรวจสอบ (mock)");
+    }
+
+    // --- Security mock ---
+    // Basic XSS prevention
+    function escapeHTML(text) {
+      return text.replace(/[&<>"']/g,function(m){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+      });
+    }
+    // Basic rate limit mock
+    let lastActionTime = 0;
+    function rateLimit() {
+      let now = Date.now();
+      if(now-lastActionTime<500) return false;
+      lastActionTime = now;
+      return true;
+    }
+
+    // --- Initial Render ---
+    renderAdBanner(); renderFeed(); renderShop(); renderCMS(); renderChat(); renderGamification(); renderDashboard(); renderProfile();
+    showSection('feed');
+    updateNavByRole();
+  </script>
+</body>
+</html>
